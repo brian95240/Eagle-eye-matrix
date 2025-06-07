@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+redis
+pydantic
+Pillow # For image metadata extraction
+async-timeout
+python-multipart # For FastAPI File Uploads
+httpx # For calling other services

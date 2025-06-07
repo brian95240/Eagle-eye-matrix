@@ -1,0 +1,4 @@
+fastapi
+uvicorn[standard]
+pydantic
+# secrets is a built-in module, no need to install

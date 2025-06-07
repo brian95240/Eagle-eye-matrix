@@ -1,0 +1,4 @@
+fastapi
+uvicorn[standard]
+pydantic
+httpx # For potential future inter-service calls, though not used in placeholders

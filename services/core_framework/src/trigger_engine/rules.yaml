@@ -1,0 +1,56 @@
+# Example rules for the EEM Trigger Evaluation Engine
+
+- rule_id: "GEO_LAZY_LOAD_IMAGE"
+  description: "Trigger geolocation analysis for an ingested image if it lacks GPS data and is marked for analysis."
+  trigger_event_types:
+    - "data.image.ingested" # Assuming an event type for image ingestion
+  conditions:
+    - field: "payload.metadata.has_gps"
+      operator: "=="
+      value: false
+    - field: "payload.metadata.needs_geolocation"
+      operator: "=="
+      value: true
+  actions:
+    - action_type: "publish_event"
+      target_event_type: "analysis.geolocation.requested"
+      # Payload override could add specific parameters if needed, otherwise original payload might be sufficient
+      # payload_override:
+      #   priority: "low"
+  enabled: true
+
+- rule_id: "FACEREC_TRIGGER_ON_DETECT"
+  description: "Trigger facial feature extraction if faces are detected in an image."
+  trigger_event_types:
+    - "facerec.faces.detected" # Event published by facerec-detector
+  conditions:
+    # Check if the list of detected faces is not empty
+    # This condition might need refinement based on actual payload structure
+    - field: "payload.faces"
+      operator: "exists" # Check if the 'faces' key exists
+    # Add a condition to check if the list is non-empty if needed, e.g., using a custom operator or checking length
+  actions:
+    - action_type: "publish_event"
+      target_event_type: "analysis.facerec.extract.requested"
+  enabled: true
+
+- rule_id: "RESOURCE_ALERT_HIGH_CPU"
+  description: "(Conceptual) Trigger an alert if a service reports sustained high CPU."
+  trigger_event_types:
+    - "system.resource.metrics.reported" # Assuming metrics are reported via events
+  conditions:
+    - field: "payload.service_name"
+      operator: "=="
+      value: "geo-cv-analyzer"
+    - field: "payload.metrics.cpu_utilization_percent"
+      operator: ">="
+      value: 90
+    # Add condition for duration/sustained high CPU if possible
+  actions:
+    - action_type: "publish_event"
+      target_event_type: "system.alert.resource.high_cpu"
+      payload_override:
+        alert_message: "High CPU detected on geo-cv-analyzer"
+        severity: "warning"
+  enabled: false # Disabled for now, conceptual example
+

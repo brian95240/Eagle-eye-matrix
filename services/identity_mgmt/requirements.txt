@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+redis
+pydantic
+async-timeout
+httpx # Added for calling adapter services
